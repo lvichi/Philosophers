@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/21 19:20:37 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/28 21:06:42 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,25 +24,36 @@
 typedef struct s_philo
 {
 	int				id;
-	int				die;
-	int				eat;
-	int				sleep;
-	int				meals;
-	int				fork;
+	int				eat_time;
+	int				sleep_time;
+	int				meals_count;
+	int				last_meal;
 	pthread_t		thread;
-	struct s_philo	*prev;
+	pthread_mutex_t	fork;
 	struct s_philo	*next;
 }	t_philo;
 
+typedef struct s_table
+{
+	t_philo			*philos;
+	int				die_time;
+	int				meals_limit;
+	pthread_mutex_t print;
+}	t_table;
+
+// table.c
+int		create_table(t_table **table, char **argv);
+void	print_table(t_table *table);
+void	free_table(t_table *table);
+// threads.c
+int	thread_init(t_table **table);
+int	mutex_init(t_table **table);
+int	mutex_destroy(t_table **table);
 // utils.c
 void	*ft_calloc(size_t nmemb, size_t size);
 size_t	array_len(char **array);
 size_t	str_len(char *str);
 long	ft_atoi(char *nptr);
 void	ft_putnbr(long nbr);
-// table.c
-t_philo	*create_table(char **argv);
-void	print_table(t_philo *philo);
-void	free_table(t_philo *philo);
 
 #endif /* philo.h */

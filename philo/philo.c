@@ -6,33 +6,46 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/21 19:20:17 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/28 21:15:53 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 int			main(int argc, char **argv);
+static int	start_routine(t_table *table);
 static int	check_input(char **argv);
 
 int	main(int argc, char **argv)
 {
-	int		error;
-	t_philo	*table;
+	t_table	*table;
 
-	error = 0;
 	if (argc < 5 || argc > 6)
 		write(2, "Invalid number of arguments\n", 28);
 	else if (check_input(&argv[1]))
 		write (2, "Wrong arguments, only numbers between 1 and INT_MAX\n", 52);
+	else if (create_table(&table, &argv[1]))
+		write (2, "Failed to create philosophers\n", 30);
+	else if (start_routine(table))
+		write (2, "Failed to start routine\n", 24);
 	else
 	{
-		table = create_table(&argv[1]);
-		if (!table)
-			write (2, "Failed to create philosophers\n", 30);
 		print_table(table);
+		mutex_destroy(&table);
 		free_table(table);
 	}
+}
+
+static int	start_routine(t_table *table)
+{
+	if (mutex_init(&table))
+		return (1);
+	if (thread_init(&table))
+	{
+		mutex_destroy(&table);
+		return (1);
+	}
+	return (0);
 }
 
 static int	check_input(char **argv)
