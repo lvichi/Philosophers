@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/28 20:44:46 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/30 20:14:34 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int				create_table(t_table **table, char **argv);
 static int		create_philosophers(t_table **table, char **argv, int count);
 static t_philo	*create_philo(char **argv, int id);
 void			free_table(t_table *table);
-void			print_table(t_table *table);
 
 int	create_table(t_table **table, char **argv)
 {
@@ -27,7 +26,6 @@ int	create_table(t_table **table, char **argv)
 	(*table)->meals_limit = -1;
 	if (argv[4])
 		(*table)->meals_limit = ft_atoi(argv[4]);
-	//(*table)->print = 0;
 	if (create_philosophers(table, argv, ft_atoi(argv[0])))
 	{
 		free_table(*table);
@@ -75,7 +73,7 @@ static t_philo	*create_philo(char **argv, int id)
 	philo->eat_time = ft_atoi(argv[1]);
 	philo->sleep_time = ft_atoi(argv[2]);
 	philo->meals_count = 0;
-	//philo->fork = 0;
+	philo->alive = 1;
 	philo->thread = 0;
 	philo->next = philo;
 	return (philo);
@@ -100,7 +98,7 @@ void	free_table(t_table *table)
 	free(table);
 }
 
-void	print_table(t_table *table)
+/*void	print_table(t_table *table)
 {
 	while (1)
 	{
@@ -117,11 +115,9 @@ void	print_table(t_table *table)
 		ft_putnbr(table->philos->meals_count);
 		write(1, " Meals_limit: ", 14);
 		ft_putnbr(table->meals_limit);
-		// write(1, " Fork: ", 7);
-		// ft_putnbr(table->philos->fork);
 		write(1, "\n", 1);
 		if ((table->philos->next)->id == 0)
 			break ;
 		table->philos = table->philos->next;
 	}
-}
+}*/
