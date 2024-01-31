@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 00:16:53 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 00:30:32 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ typedef struct s_philo
 	int				fork;
 	int				alive;
 	int				got_fork;
-	int				sleep;
+	int				eating;
+	int				sleeping;
 	int				thinking;
 	pthread_t		thread;
 	//pthread_mutex_t	fork;

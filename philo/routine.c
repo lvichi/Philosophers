@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/28 20:49:11 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 00:21:36 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 00:49:43 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,16 @@ void	*routine(void *data)
 	{
 		pthread_mutex_unlock(&philo->data);
 		get_fork(philo);
+		pthread_mutex_lock(&philo->data);
+		philo->eating++;
+		pthread_mutex_unlock(&philo->data);
 		usleep(philo->eat_time * 1000);
-		pthread_mutex_lock(&(philo->next)->data);
+		pthread_mutex_lock(&((philo->next)->data));
 		(philo->next)->fork = 1;
-		pthread_mutex_unlock(&(philo->next)->data);
+		pthread_mutex_unlock(&((philo->next)->data));
 		pthread_mutex_lock(&philo->data);
 		philo->fork = 1;
-		philo->sleep++;
+		philo->sleeping++;
 		philo->meals_count++;
 		pthread_mutex_unlock(&philo->data);
 		usleep(philo->sleep_time * 1000);
@@ -49,7 +52,7 @@ static void	get_fork(t_philo *philo)
 	forks_count = 0;
 	while (forks_count < 2)
 	{
-		pthread_mutex_lock(&philo->data);
+		pthread_mutex_lock(&(philo->data));
 		if (!philo->alive)
 			forks_count = 2;
 		if (philo->fork)
@@ -58,14 +61,14 @@ static void	get_fork(t_philo *philo)
 			philo->got_fork++;
 			forks_count++;
 		}
-		pthread_mutex_unlock(&philo->data);
-		pthread_mutex_lock(&(philo->next)->data);
+		pthread_mutex_unlock(&(philo->data));
+		pthread_mutex_lock(&((philo->next)->data));
 		if ((philo->next)->fork)
 		{
-			philo->fork = 0;
-			philo->got_fork++;
+			(philo->next)->fork = 0;
+			philo->got_fork++; // protect
 			forks_count++;
 		}
-		pthread_mutex_unlock(&(philo->next)->data);
+		pthread_mutex_unlock(&((philo->next)->data));
 	}
 }

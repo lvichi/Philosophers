@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/30 23:40:06 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 00:43:11 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,14 +80,16 @@ static int	start_brainstorm(t_table *table)
 	while (1)
 	{
 		now = ft_time(table->start_time);
-		pthread_mutex_lock(&table->philos->data);
+		pthread_mutex_lock(&(table->philos->data));
 		if (!table->philos->alive)
 			break ;
 		if (table->philos->thinking && !end_flag && table->philos->thinking--)
 			ft_printf("%d ms\t %d is thinking\n", now, table->philos->id);
 		while (table->philos->got_fork && !end_flag && table->philos->got_fork--)
 			ft_printf("%d ms\t %d has taken a fork\n", now, table->philos->id);
-		if (table->philos->sleep && !end_flag && table->philos->sleep--)
+		if (table->philos->eating && !end_flag && table->philos->eating--)
+			ft_printf("%d ms\t %d is eating\n", now, table->philos->id);
+		if (table->philos->sleeping && !end_flag && table->philos->sleeping--)
 			ft_printf("%d ms\t %d is sleeping\n", now, table->philos->id);
 		if (table->philos->meals_count >= table->meals_limit || end_flag)
 		{
@@ -96,10 +98,10 @@ static int	start_brainstorm(t_table *table)
 			end_flag = 1;
 			table->philos->alive = 0;
 		}
-		pthread_mutex_unlock(&table->philos->data);
+		pthread_mutex_unlock(&(table->philos->data));
 		table->philos = table->philos->next;
 	}
-	pthread_mutex_unlock(&table->philos->data);
+	pthread_mutex_unlock(&(table->philos->data));
 	return (0);
 }
 

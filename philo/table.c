@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 00:15:42 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 00:38:53 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,14 @@ static t_philo	*create_philo(char **argv, int id)
 	if (!philo)
 		return (NULL);
 	philo->id = id;
-	philo->eat_time = ft_atoi(argv[1]);
-	philo->sleep_time = ft_atoi(argv[2]);
+	philo->eat_time = ft_atoi(argv[2]);
+	philo->sleep_time = ft_atoi(argv[3]);
 	philo->meals_count = 0;
 	philo->fork = 1;
 	philo->alive = 1;
 	philo->got_fork = 0;
-	philo->sleep = 0;
+	philo->eating = 0;
+	philo->sleeping = 0;
 	philo->thinking = 0;
 	philo->thread = 0;
 	philo->next = philo;
