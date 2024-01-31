@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 16:06:29 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 22:41:28 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 
 int			main(int argc, char **argv);
 static int	check_input(char **argv);
-static int	start_routine(t_table *table);
-static int	start_brainstorm(t_table *table);
-static void check_alive(t_table **table, int *end_flag, int *now);
-static int	end_brainstorm(t_table *table);
+static void	start_brainstorm(t_table *table);
+static void	check_alive(t_table **table, int *end_flag, int *now);
+static void	end_brainstorm(t_table *table);
 
 int	main(int argc, char **argv)
 {
@@ -29,15 +28,10 @@ int	main(int argc, char **argv)
 		write (2, "Wrong arguments, only numbers between 1 and INT_MAX\n", 52);
 	else if (create_table(&table, &argv[1]))
 		write (2, "Failed to create philosophers\n", 30);
-	else if (start_routine(table))
-		write (2, "Failed to start routine\n", 24);
+	else if (init_threads(table))
+		write (2, "Failed to create threads\n", 25);
 	else
-	{
 		start_brainstorm(table);
-		end_brainstorm(table);
-		mutex_destroy(&table);
-		free_table(table);
-	}
 }
 
 static int	check_input(char **argv)
@@ -60,23 +54,11 @@ static int	check_input(char **argv)
 	return (0);
 }
 
-static int	start_routine(t_table *table)
-{
-	if (mutex_init(&table))
-		return (1);
-	if (thread_init(&table))
-	{
-		mutex_destroy(&table);
-		return (1);
-	}
-	return (0);
-}
-
-static int	start_brainstorm(t_table *table)
+static void	start_brainstorm(t_table *table)
 {
 	int	end_flag;
-	int now;
-	
+	int	now;
+
 	end_flag = 0;
 	while (1)
 	{
@@ -85,22 +67,23 @@ static int	start_brainstorm(t_table *table)
 		if (!table->philos->alive)
 			break ;
 		if (table->philos->thinking && !end_flag && table->philos->thinking--)
-			ft_printf("%d ms\t %d is thinking\n", now, table->philos->id);
-		while (table->philos->got_fork && !end_flag && table->philos->got_fork--)
-			ft_printf("%d ms\t %d has taken a fork\n", now, table->philos->id);
+			print_log("%d %i is thinking\n", now, table->philos->id);
+		while (table->philos->got_fork && !end_flag
+			&& table->philos->got_fork--)
+			print_log("%d %i has taken a fork\n", now, table->philos->id);
 		check_alive(&table, &end_flag, &now);
 		if (table->philos->eating && !end_flag && table->philos->eating--)
-			ft_printf("%d ms\t %d is eating\n", now, table->philos->id);
+			print_log("%d %i is eating\n", now, table->philos->id);
 		if (table->philos->sleeping && !end_flag && table->philos->sleeping--)
-			ft_printf("%d ms\t %d is sleeping\n", now, table->philos->id);
+			print_log("%d %i is sleeping\n", now, table->philos->id);
 		pthread_mutex_unlock(&(table->data));
 		table->philos = table->philos->next;
 	}
 	pthread_mutex_unlock(&(table->data));
-	return (0);
+	end_brainstorm(table);
 }
 
-static void check_alive(t_table **table, int *end_flag, int *now)
+static void	check_alive(t_table **table, int *end_flag, int *now)
 {
 	int	id_start;
 	int	meals_limit_count;
@@ -108,7 +91,7 @@ static void check_alive(t_table **table, int *end_flag, int *now)
 	if (ft_time((*table)->philos->last_meal) > (*table)->die_time || *end_flag)
 	{
 		if (!(*end_flag))
-			ft_printf("%d ms\t %d died\n", *now, (*table)->philos->id);
+			print_log("%d %i died\n", *now, (*table)->philos->id);
 		*end_flag = 1;
 		(*table)->philos->alive = 0;
 	}
@@ -126,9 +109,11 @@ static void check_alive(t_table **table, int *end_flag, int *now)
 	}
 }
 
-static int	end_brainstorm(t_table *table)
+static void	end_brainstorm(t_table *table)
 {
-	int	start;
+	int		start;
+	t_philo	*temp_philo;
+	t_philo	*first;
 
 	start = table->philos->id;
 	while (1)
@@ -138,5 +123,17 @@ static int	end_brainstorm(t_table *table)
 		if (table->philos->id == start)
 			break ;
 	}
-	return (0);
+	pthread_mutex_destroy(&(table->data));
+	temp_philo = table->philos;
+	first = table->philos;
+	while (temp_philo)
+	{
+		if (table->philos->next != first)
+			temp_philo = table->philos->next;
+		else
+			temp_philo = NULL;
+		free(table->philos);
+		table->philos = temp_philo;
+	}
+	free(table);
 }

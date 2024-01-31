@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 15:20:15 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 22:41:25 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,8 @@
 
 # include <unistd.h>
 # include <stdlib.h>
-# include <string.h>
 # include <pthread.h>
 # include <sys/time.h>
-# include <stdarg.h>
-
 
 # define INT_MAX 2147483647
 
@@ -53,21 +50,13 @@ typedef struct s_table
 
 // table.c
 int		create_table(t_table **table, char **argv);
-void	free_table(t_table *table);
-int		ft_time(int start);
-// routine.c
-void	*routine(void *data);
 // threads.c
-int		thread_init(t_table **table);
-int		mutex_init(t_table **table);
-void	mutex_destroy(t_table **table);
-// ft_printf.c
-int		ft_printf(const char *format, ...);
+int		init_threads(t_table *table);
 // utils.c
+int		ft_time(int start);
 void	*ft_calloc(size_t nmemb, size_t size);
-size_t	array_len(char **array);
-size_t	str_len(char *str);
 long	ft_atoi(char *nptr);
 int		ft_putnbr(long nbr);
+void	print_log(const char *format, int time, int id);
 
-#endif /* philo.h */
+#endif

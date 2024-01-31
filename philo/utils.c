@@ -6,17 +6,29 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:42:22 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/30 22:30:55 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 22:30:11 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+int		ft_time(int start);
 void	*ft_calloc(size_t nmemb, size_t size);
-size_t	array_len(char **array);
-size_t	str_len(char *str);
 long	ft_atoi(char *nptr);
 int		ft_putnbr(long nbr);
+void	print_log(const char *format, int time, int id);
+
+int	ft_time(int start)
+{
+	struct timeval	current_time;
+	int				now;
+
+	gettimeofday(&current_time, NULL);
+	now = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000)
+		% ((current_time.tv_sec * 1000 + current_time.tv_usec / 1000)
+			/ 1000000);
+	return (now - start);
+}
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {
@@ -29,26 +41,6 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	while (size)
 		((char *)ret)[--size] = 0;
 	return (ret);
-}
-
-size_t	array_len(char **array)
-{
-	size_t	i;
-
-	i = 0;
-	while (array[i])
-		i++;
-	return (i);
-}
-
-size_t	str_len(char *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
 }
 
 long	ft_atoi(char *nptr)
@@ -96,4 +88,26 @@ int	ft_putnbr(long nbr)
 	c = nbr + '0';
 	size += write(1, &c, 1);
 	return (size);
+}
+
+void	print_log(const char *format, int time, int id)
+{
+	int		i;
+
+	i = -1;
+	while (format[++i])
+	{
+		if (format[i] == '%' && format[i + 1] == 'd' && ++i)
+		{
+			ft_putnbr(time);
+			if (time <= 9999)
+				write(1, " ms\t", 4);
+			else
+				write(1, " ms", 3);
+		}
+		else if (format[i] == '%' && format[i + 1] == 'i' && ++i)
+			ft_putnbr(id);
+		else
+			write(1, &format[i], 1);
+	}
 }

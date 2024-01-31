@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 15:37:30 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 22:41:15 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 int				create_table(t_table **table, char **argv);
 static int		create_philosophers(t_table **table, char **argv, int count);
 static t_philo	*create_philo(char **argv, int id);
-void			free_table(t_table *table);
-int				ft_time(int start);
+static void		free_table(t_table *table);
 
 int	create_table(t_table **table, char **argv)
 {
@@ -87,7 +86,7 @@ static t_philo	*create_philo(char **argv, int id)
 	return (philo);
 }
 
-void	free_table(t_table *table)
+static void	free_table(t_table *table)
 {
 	t_philo	*temp_philo;
 	t_philo	*first;
@@ -104,15 +103,4 @@ void	free_table(t_table *table)
 		table->philos = temp_philo;
 	}
 	free(table);
-}
-
-int	ft_time(int start)
-{
-	struct timeval	current_time;
-	int				now;
-
-	gettimeofday(&current_time, NULL);
-	now = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000) %
-		((current_time.tv_sec * 1000 + current_time.tv_usec / 1000) / 1000000);
-	return (now - start);
 }
