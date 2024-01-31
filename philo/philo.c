@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/30 21:00:09 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/30 23:40:06 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,21 +73,33 @@ static int	start_routine(t_table *table)
 
 static int	start_brainstorm(t_table *table)
 {
-	int	i;
-
-	i = 0;
-	while (table->philos->alive)
+	int	end_flag;
+	int now;
+	
+	end_flag = 0;
+	while (1)
 	{
-		sleep(1);
-		i++;
-		if (i >= 3)
+		now = ft_time(table->start_time);
+		pthread_mutex_lock(&table->philos->data);
+		if (!table->philos->alive)
+			break ;
+		if (table->philos->thinking && !end_flag && table->philos->thinking--)
+			ft_printf("%d ms\t %d is thinking\n", now, table->philos->id);
+		while (table->philos->got_fork && !end_flag && table->philos->got_fork--)
+			ft_printf("%d ms\t %d has taken a fork\n", now, table->philos->id);
+		if (table->philos->sleep && !end_flag && table->philos->sleep--)
+			ft_printf("%d ms\t %d is sleeping\n", now, table->philos->id);
+		if (table->philos->meals_count >= table->meals_limit || end_flag)
 		{
-			pthread_mutex_lock(&table->philos->data);
+			if (!end_flag)
+				ft_printf("%d ms\t %d died\n", now, table->philos->id);
+			end_flag = 1;
 			table->philos->alive = 0;
-			pthread_mutex_unlock(&table->philos->data);
 		}
+		pthread_mutex_unlock(&table->philos->data);
 		table->philos = table->philos->next;
 	}
+	pthread_mutex_unlock(&table->philos->data);
 	return (0);
 }
 
@@ -99,11 +111,6 @@ static int	end_brainstorm(t_table *table)
 	while (1)
 	{
 		pthread_join(table->philos->thread, NULL);
-		pthread_mutex_lock(&table->print);
-		write(1, "Thread ended: ", 14);
-		ft_putnbr(table->philos->id);
-		write(1, "\n", 1);
-		pthread_mutex_unlock(&table->print);
 		table->philos = table->philos->next;
 		if (table->philos->id == start)
 			break ;

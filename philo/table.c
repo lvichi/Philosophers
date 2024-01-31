@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/30 20:14:34 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 00:15:42 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,14 @@ int				create_table(t_table **table, char **argv);
 static int		create_philosophers(t_table **table, char **argv, int count);
 static t_philo	*create_philo(char **argv, int id);
 void			free_table(t_table *table);
+int				ft_time(int start);
 
 int	create_table(t_table **table, char **argv)
 {
 	*table = (t_table *)ft_calloc(1, sizeof(t_table));
 	if (!table)
 		return (1);
+	(*table)->start_time = ft_time(0);
 	(*table)->die_time = ft_atoi(argv[1]);
 	(*table)->meals_limit = -1;
 	if (argv[4])
@@ -73,7 +75,11 @@ static t_philo	*create_philo(char **argv, int id)
 	philo->eat_time = ft_atoi(argv[1]);
 	philo->sleep_time = ft_atoi(argv[2]);
 	philo->meals_count = 0;
+	philo->fork = 1;
 	philo->alive = 1;
+	philo->got_fork = 0;
+	philo->sleep = 0;
+	philo->thinking = 0;
 	philo->thread = 0;
 	philo->next = philo;
 	return (philo);
@@ -98,26 +104,13 @@ void	free_table(t_table *table)
 	free(table);
 }
 
-/*void	print_table(t_table *table)
+int	ft_time(int start)
 {
-	while (1)
-	{
-		write(1, "Philosopher ", 12);
-		ft_putnbr(table->philos->id);
-		write(1, ":\n", 2);
-		write(1, "Die: ", 5);
-		ft_putnbr(table->die_time);
-		write(1, " Eat: ", 6);
-		ft_putnbr(table->philos->eat_time);
-		write(1, " Sleep: ", 8);
-		ft_putnbr(table->philos->sleep_time);
-		write(1, " Meals: ", 8);
-		ft_putnbr(table->philos->meals_count);
-		write(1, " Meals_limit: ", 14);
-		ft_putnbr(table->meals_limit);
-		write(1, "\n", 1);
-		if ((table->philos->next)->id == 0)
-			break ;
-		table->philos = table->philos->next;
-	}
-}*/
+	struct timeval	current_time;
+	int				now;
+
+	gettimeofday(&current_time, NULL);
+	now = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000) %
+		((current_time.tv_sec * 1000 + current_time.tv_usec / 1000) / 100000);
+	return (now - start);
+}

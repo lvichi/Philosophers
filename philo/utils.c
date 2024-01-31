@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:42:22 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/21 18:06:50 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/30 22:30:55 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	*ft_calloc(size_t nmemb, size_t size);
 size_t	array_len(char **array);
 size_t	str_len(char *str);
 long	ft_atoi(char *nptr);
-void	ft_putnbr(long nbr);
+int		ft_putnbr(long nbr);
 
 void	*ft_calloc(size_t nmemb, size_t size)
 {
@@ -77,20 +77,23 @@ long	ft_atoi(char *nptr)
 	return (n * negative);
 }
 
-void	ft_putnbr(long nbr)
+int	ft_putnbr(long nbr)
 {
 	char	c;
+	int		size;
 
+	size = 0;
 	if (nbr < 0)
 	{
-		write(1, "-", 1);
+		size += write(1, "-", 1);
 		nbr = -nbr;
 	}
 	while (nbr > 9)
 	{
-		ft_putnbr(nbr / 10);
+		size += ft_putnbr(nbr / 10);
 		nbr = nbr % 10;
 	}
 	c = nbr + '0';
-	write(1, &c, 1);
+	size += write(1, &c, 1);
+	return (size);
 }
