@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 22:41:15 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 23:03:48 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int				create_table(t_table **table, char **argv);
 static int		create_philosophers(t_table **table, char **argv, int count);
 static t_philo	*create_philo(char **argv, int id);
 static void		free_table(t_table *table);
+static void		*ft_calloc(size_t nmemb, size_t size);
 
 int	create_table(t_table **table, char **argv)
 {
@@ -103,4 +104,17 @@ static void	free_table(t_table *table)
 		table->philos = temp_philo;
 	}
 	free(table);
+}
+
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void	*ret;
+
+	size = nmemb * size;
+	ret = malloc(size);
+	if (!ret)
+		return (NULL);
+	while (size)
+		((char *)ret)[--size] = 0;
+	return (ret);
 }

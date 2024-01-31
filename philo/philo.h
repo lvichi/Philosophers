@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 22:41:25 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 23:06:23 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,7 @@ int		create_table(t_table **table, char **argv);
 int		init_threads(t_table *table);
 // utils.c
 int		ft_time(int start);
-void	*ft_calloc(size_t nmemb, size_t size);
 long	ft_atoi(char *nptr);
-int		ft_putnbr(long nbr);
 void	print_log(const char *format, int time, int id);
 
 #endif
