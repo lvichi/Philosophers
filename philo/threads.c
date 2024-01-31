@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/28 21:03:23 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 00:18:06 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 15:13:37 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ int	thread_init(t_table **table)
 		error_flag = pthread_create(&((*table)->philos->thread),
 				NULL, routine, ((*table)->philos));
 		(*table)->philos = (*table)->philos->next;
-		usleep(200);
-		if ((*table)->philos->id == 0)
+		if ((*table)->philos->id == 1)
 			break ;
+		usleep(100);
 	}
 	return (error_flag);
 }
@@ -37,16 +37,12 @@ int	mutex_init(t_table **table)
 {
 	int				error_flag;
 
-	//error_flag = pthread_mutex_init(&(*table)->print, NULL);
-	error_flag = 0;
+	error_flag = pthread_mutex_init(&((*table)->data), NULL);
 	while (1 && !error_flag)
 	{
-		// error_flag = pthread_mutex_init(&((*table)->philos->fork), NULL);
-		// if (error_flag)
-		// 	break ;
-		error_flag = pthread_mutex_init(&((*table)->philos->data), NULL);
+		(*table)->philos->data = &((*table)->data);
 		(*table)->philos = (*table)->philos->next;
-		if ((*table)->philos->id == 0)
+		if ((*table)->philos->id == 1)
 			break ;
 	}
 	if (error_flag)
@@ -56,16 +52,5 @@ int	mutex_init(t_table **table)
 
 void	mutex_destroy(t_table **table)
 {
-	int	start;
-
-	start = (*table)->philos->id;
-	//pthread_mutex_destroy((&((*table)->print)));
-	while (1)
-	{
-		//pthread_mutex_destroy(&((*table)->philos->fork));
-		pthread_mutex_destroy(&((*table)->philos->data));
-		(*table)->philos = (*table)->philos->next;
-		if ((*table)->philos->id == start)
-			break ;
-	}
+	pthread_mutex_destroy(&((*table)->data));
 }

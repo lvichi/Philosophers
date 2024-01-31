@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 00:30:32 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 15:20:15 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,28 +26,29 @@
 typedef struct s_philo
 {
 	int				id;
+	int				alive;
 	int				eat_time;
 	int				sleep_time;
 	int				meals_count;
+	int				last_meal;
 	int				fork;
-	int				alive;
 	int				got_fork;
 	int				eating;
 	int				sleeping;
 	int				thinking;
 	pthread_t		thread;
-	//pthread_mutex_t	fork;
-	pthread_mutex_t	data;
+	pthread_mutex_t	*data;
 	struct s_philo	*next;
 }	t_philo;
 
 typedef struct s_table
 {
 	t_philo			*philos;
+	int				philos_count;
 	int				start_time;
 	int				die_time;
 	int				meals_limit;
-	//pthread_mutex_t	print;
+	pthread_mutex_t	data;
 }	t_table;
 
 // table.c

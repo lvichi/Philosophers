@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 00:38:53 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 15:37:30 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int	create_table(t_table **table, char **argv)
 	*table = (t_table *)ft_calloc(1, sizeof(t_table));
 	if (!table)
 		return (1);
+	(*table)->philos_count = ft_atoi(argv[0]);
 	(*table)->start_time = ft_time(0);
 	(*table)->die_time = ft_atoi(argv[1]);
 	(*table)->meals_limit = -1;
@@ -43,7 +44,7 @@ static int	create_philosophers(t_table **table, char **argv, int count)
 	t_philo	*philos;
 	int		id;
 
-	id = 0;
+	id = 1;
 	first = create_philo(argv, id++);
 	if (!first)
 		return (1);
@@ -72,16 +73,16 @@ static t_philo	*create_philo(char **argv, int id)
 	if (!philo)
 		return (NULL);
 	philo->id = id;
+	philo->alive = 1;
 	philo->eat_time = ft_atoi(argv[2]);
 	philo->sleep_time = ft_atoi(argv[3]);
 	philo->meals_count = 0;
+	philo->last_meal = ft_time(0);
 	philo->fork = 1;
-	philo->alive = 1;
 	philo->got_fork = 0;
 	philo->eating = 0;
 	philo->sleeping = 0;
 	philo->thinking = 0;
-	philo->thread = 0;
 	philo->next = philo;
 	return (philo);
 }
@@ -112,6 +113,6 @@ int	ft_time(int start)
 
 	gettimeofday(&current_time, NULL);
 	now = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000) %
-		((current_time.tv_sec * 1000 + current_time.tv_usec / 1000) / 100000);
+		((current_time.tv_sec * 1000 + current_time.tv_usec / 1000) / 1000000);
 	return (now - start);
 }

@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 00:43:11 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/01/31 16:06:29 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int			main(int argc, char **argv);
 static int	check_input(char **argv);
 static int	start_routine(t_table *table);
 static int	start_brainstorm(t_table *table);
+static void check_alive(t_table **table, int *end_flag, int *now);
 static int	end_brainstorm(t_table *table);
 
 int	main(int argc, char **argv)
@@ -80,29 +81,49 @@ static int	start_brainstorm(t_table *table)
 	while (1)
 	{
 		now = ft_time(table->start_time);
-		pthread_mutex_lock(&(table->philos->data));
+		pthread_mutex_lock(&(table->data));
 		if (!table->philos->alive)
 			break ;
 		if (table->philos->thinking && !end_flag && table->philos->thinking--)
 			ft_printf("%d ms\t %d is thinking\n", now, table->philos->id);
 		while (table->philos->got_fork && !end_flag && table->philos->got_fork--)
 			ft_printf("%d ms\t %d has taken a fork\n", now, table->philos->id);
+		check_alive(&table, &end_flag, &now);
 		if (table->philos->eating && !end_flag && table->philos->eating--)
 			ft_printf("%d ms\t %d is eating\n", now, table->philos->id);
 		if (table->philos->sleeping && !end_flag && table->philos->sleeping--)
 			ft_printf("%d ms\t %d is sleeping\n", now, table->philos->id);
-		if (table->philos->meals_count >= table->meals_limit || end_flag)
-		{
-			if (!end_flag)
-				ft_printf("%d ms\t %d died\n", now, table->philos->id);
-			end_flag = 1;
-			table->philos->alive = 0;
-		}
-		pthread_mutex_unlock(&(table->philos->data));
+		pthread_mutex_unlock(&(table->data));
 		table->philos = table->philos->next;
 	}
-	pthread_mutex_unlock(&(table->philos->data));
+	pthread_mutex_unlock(&(table->data));
 	return (0);
+}
+
+static void check_alive(t_table **table, int *end_flag, int *now)
+{
+	int	id_start;
+	int	meals_limit_count;
+
+	if (ft_time((*table)->philos->last_meal) > (*table)->die_time || *end_flag)
+	{
+		if (!(*end_flag))
+			ft_printf("%d ms\t %d died\n", *now, (*table)->philos->id);
+		*end_flag = 1;
+		(*table)->philos->alive = 0;
+	}
+	id_start = (*table)->philos->id;
+	meals_limit_count = 0;
+	while ((*table)->meals_limit > 0)
+	{
+		if ((*table)->philos->meals_count >= (*table)->meals_limit)
+			meals_limit_count++;
+		if (meals_limit_count == (*table)->philos_count)
+			*end_flag = 1;
+		(*table)->philos = (*table)->philos->next;
+		if ((*table)->philos->id == id_start)
+			break ;
+	}
 }
 
 static int	end_brainstorm(t_table *table)
