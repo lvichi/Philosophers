@@ -34,7 +34,7 @@ typedef struct s_philo
 	int				sleeping;
 	int				thinking;
 	pthread_t		thread;
-	pthread_mutex_t	*data;
+	//pthread_mutex_t	*data;
 	pthread_mutex_t	m_fork;
 	struct s_philo	*next;
 }	t_philo;
@@ -46,7 +46,7 @@ typedef struct s_table
 	long			start_time;
 	int				die_time;
 	int				meals_limit;
-	pthread_mutex_t	data;
+	//pthread_mutex_t	data;
 }	t_table;
 
 // table.c

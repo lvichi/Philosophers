@@ -63,7 +63,7 @@ static void	start_brainstorm(t_table *table)
 	while (1)
 	{
 		now = ft_time(table->start_time);
-		pthread_mutex_lock(&(table->data));
+		pthread_mutex_lock(&(table->philos->m_fork));
 		if (!table->philos->alive)
 			break ;
 		if (table->philos->thinking && !end_flag && table->philos->thinking--)
@@ -71,15 +71,17 @@ static void	start_brainstorm(t_table *table)
 		while (table->philos->got_fork && !end_flag
 			&& table->philos->got_fork--)
 			print_log("%d %i has taken a fork\n", now, table->philos->id);
+		pthread_mutex_unlock(&(table->philos->m_fork));
 		check_alive(&table, &end_flag, &now);
+		pthread_mutex_lock(&(table->philos->m_fork));
 		if (table->philos->eating && !end_flag && table->philos->eating--)
 			print_log("%d %i is eating\n", now, table->philos->id);
 		if (table->philos->sleeping && !end_flag && table->philos->sleeping--)
 			print_log("%d %i is sleeping\n", now, table->philos->id);
-		pthread_mutex_unlock(&(table->data));
+		pthread_mutex_unlock(&(table->philos->m_fork));
 		table->philos = table->philos->next;
 	}
-	pthread_mutex_unlock(&(table->data));
+	pthread_mutex_unlock(&(table->philos->m_fork));
 	end_brainstorm(table);
 }
 
@@ -88,6 +90,7 @@ static void	check_alive(t_table **table, int *end_flag, long *now)
 	int	id_start;
 	int	meals_limit_count;
 
+	pthread_mutex_lock(&((*table)->philos->m_fork));
 	if (ft_time((*table)->philos->last_meal) > (*table)->die_time || *end_flag)
 	{
 		if (!(*end_flag))
@@ -97,12 +100,15 @@ static void	check_alive(t_table **table, int *end_flag, long *now)
 	}
 	id_start = (*table)->philos->id;
 	meals_limit_count = 0;
+	pthread_mutex_unlock(&((*table)->philos->m_fork));
 	while ((*table)->meals_limit > 0)
 	{
+		pthread_mutex_lock(&((*table)->philos->m_fork));
 		if ((*table)->philos->meals_count >= (*table)->meals_limit)
 			meals_limit_count++;
 		if (meals_limit_count == (*table)->philos_count)
 			*end_flag = 1;
+		pthread_mutex_unlock(&((*table)->philos->m_fork));
 		(*table)->philos = (*table)->philos->next;
 		if ((*table)->philos->id == id_start)
 			break ;
@@ -115,7 +121,7 @@ static void	end_brainstorm(t_table *table)
 	t_philo	*first;
 
 	end_threads(table);
-	pthread_mutex_destroy(&(table->data));
+	//pthread_mutex_destroy(&(table->data));
 	temp_philo = table->philos;
 	first = table->philos;
 	while (temp_philo)
