@@ -30,7 +30,7 @@ int	init_threads(t_table *table)
 		table->philos = table->philos->next;
 		if (table->philos->id == 1)
 			break ;
-		usleep(10);
+		usleep(100);
 	}
 	while (!error_flag)
 	{
@@ -49,7 +49,22 @@ void	*routine(void *philo)
 {
 	while (1)
 	{
-		get_fork_left((t_philo *)philo);
+		if ((((t_philo *)philo)->id) % 2 == 0)
+		{
+			get_fork_left((t_philo *)philo);
+			usleep(100);
+			get_fork_right((t_philo *)philo);
+		}
+		else
+		{
+			get_fork_right((t_philo *)philo);
+			usleep(100);
+			get_fork_left((t_philo *)philo);
+		}
+		pthread_mutex_lock(((t_philo *)philo)->data);
+		((t_philo *)philo)->eating++;
+		((t_philo *)philo)->last_meal = ft_time(0);
+		pthread_mutex_unlock(((t_philo *)philo)->data);
 		usleep(((t_philo *)philo)->eat_time * 1000);
 		pthread_mutex_lock(&((((t_philo *)philo)->next)->m_fork));
 		(((t_philo *)philo)->next)->fork = 1;
@@ -93,7 +108,6 @@ static void	get_fork_left(t_philo *philo)
 		pthread_mutex_unlock(philo->data);
 	}
 	pthread_mutex_unlock(philo->data);
-	get_fork_right((t_philo *)philo);
 }
 
 static void	get_fork_right(t_philo *philo)
@@ -116,8 +130,6 @@ static void	get_fork_right(t_philo *philo)
 			break ;
 		pthread_mutex_unlock(philo->data);
 	}
-	((t_philo *)philo)->eating++;
-	((t_philo *)philo)->last_meal = ft_time(0);
 	pthread_mutex_unlock(philo->data);
 }
 
