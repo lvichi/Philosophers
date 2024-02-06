@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 22:41:28 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/04 17:57:53 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int			main(int argc, char **argv);
 static int	check_input(char **argv);
 static void	start_brainstorm(t_table *table);
-static void	check_alive(t_table **table, int *end_flag, int *now);
+static void	check_alive(t_table **table, int *end_flag, long *now);
 static void	end_brainstorm(t_table *table);
 
 int	main(int argc, char **argv)
@@ -56,8 +56,8 @@ static int	check_input(char **argv)
 
 static void	start_brainstorm(t_table *table)
 {
-	int	end_flag;
-	int	now;
+	int		end_flag;
+	long	now;
 
 	end_flag = 0;
 	while (1)
@@ -83,7 +83,7 @@ static void	start_brainstorm(t_table *table)
 	end_brainstorm(table);
 }
 
-static void	check_alive(t_table **table, int *end_flag, int *now)
+static void	check_alive(t_table **table, int *end_flag, long *now)
 {
 	int	id_start;
 	int	meals_limit_count;
@@ -111,18 +111,10 @@ static void	check_alive(t_table **table, int *end_flag, int *now)
 
 static void	end_brainstorm(t_table *table)
 {
-	int		start;
 	t_philo	*temp_philo;
 	t_philo	*first;
 
-	start = table->philos->id;
-	while (1)
-	{
-		pthread_join(table->philos->thread, NULL);
-		table->philos = table->philos->next;
-		if (table->philos->id == start)
-			break ;
-	}
+	end_threads(table);
 	pthread_mutex_destroy(&(table->data));
 	temp_philo = table->philos;
 	first = table->philos;
@@ -132,6 +124,7 @@ static void	end_brainstorm(t_table *table)
 			temp_philo = table->philos->next;
 		else
 			temp_philo = NULL;
+		pthread_mutex_destroy(&(table->philos->m_fork));
 		free(table->philos);
 		table->philos = temp_philo;
 	}

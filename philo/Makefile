@@ -6,14 +6,14 @@
 #    By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/30 19:57:48 by lvichi            #+#    #+#              #
-#    Updated: 2024/01/31 22:45:50 by lvichi           ###   ########.fr        #
+#    Updated: 2024/02/04 18:17:45 by lvichi           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g
+CFLAGS = -Wall -Wextra -Werror -pthread -fsanitize=thread
 RM = rm -fr
 FILES = *.c
 OBJS = obj/*.o

@@ -6,26 +6,24 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:42:22 by lvichi            #+#    #+#             */
-/*   Updated: 2024/01/31 23:03:15 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/04 18:51:30 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int			ft_time(int start);
+long		ft_time(int start);
 long		ft_atoi(char *nptr);
 void		print_log(const char *format, int time, int id);
 static int	ft_putnbr(long nbr);
 
-int	ft_time(int start)
+long	ft_time(int start)
 {
 	struct timeval	current_time;
 	int				now;
 
 	gettimeofday(&current_time, NULL);
-	now = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000)
-		% ((current_time.tv_sec * 1000 + current_time.tv_usec / 1000)
-			/ 1000000);
+	now = (current_time.tv_sec * 1000 + current_time.tv_usec / 1000);
 	return (now - start);
 }
 
@@ -65,10 +63,7 @@ void	print_log(const char *format, int time, int id)
 		if (format[i] == '%' && format[i + 1] == 'd' && ++i)
 		{
 			ft_putnbr(time);
-			if (time <= 9999)
-				write(1, " ms\t", 4);
-			else
-				write(1, " ms", 3);
+			write(1, "\t", 1);
 		}
 		else if (format[i] == '%' && format[i + 1] == 'i' && ++i)
 			ft_putnbr(id);
