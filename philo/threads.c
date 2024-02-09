@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/28 21:03:23 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/09 16:32:00 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 17:25:14 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	*routine(void *data)
 	t_philo	*philo;
 	
 	philo = (t_philo *)data;
-	usleep(50);
+	usleep(10);
 	if ((philo->next)->id != 1)
 	{
 		pthread_mutex_lock(&((philo->next)->m_philo));
@@ -77,7 +77,7 @@ void	*routine(void *data)
 
 static void get_forks(t_philo *philo)
 {
-	if (philo->id % 2 != 0)
+	if (philo->id > 0)
 	{
 		get_fork_left(philo);
 		get_fork_right(philo);
@@ -106,6 +106,7 @@ static void	get_fork_left(t_philo *philo)
 			break ;
 		}
 		pthread_mutex_unlock(&philo->m_philo);
+		usleep(1000);
 	}
 }
 
@@ -131,6 +132,7 @@ static void	get_fork_right(t_philo *philo)
 			break ;
 		}
 		pthread_mutex_unlock(&philo->m_philo);
+		usleep(1000);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/09 16:09:44 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 17:11:28 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,16 @@ int	create_table(t_table **table, char **argv)
 	(*table)->philos_count = ft_atoi(argv[0]);
 	(*table)->start_time = ft_time(0);
 	(*table)->die_time = ft_atoi(argv[1]);
-	(*table)->meals_limit = -1;
+	(*table)->meals_limit = 0;
 	if (argv[4])
 		(*table)->meals_limit = ft_atoi(argv[4]);
+	(*table)->total_meals = (int *)ft_calloc((*table)->philos_count,
+		sizeof(int));
+	if (!((*table)->total_meals))
+	{
+		free_table(*table);
+		return (1);
+	}
 	(*table)->end_flag = 0;
 	if (create_philosophers(table, argv, ft_atoi(argv[0])))
 	{

@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/09 15:51:17 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 17:09:49 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ static void	start_brainstorm(t_table *table)
 			print_log("%d %i is eating\n", now, table->philos->id);
 		if (table->philos->sleeping && table->philos->sleeping--)
 			print_log("%d %i is sleeping\n", now, table->philos->id);
+		table->total_meals[table->philos->id - 1] = table->philos->meals_count;
 		pthread_mutex_unlock(&(table->philos->m_philo));
 		table->philos = table->philos->next;
 		check_alive(table, now);
@@ -79,6 +80,9 @@ static void	start_brainstorm(t_table *table)
 
 static void	check_alive(t_table *table, long now)
 {
+	int	i;
+	int	min_meals;
+	
 	pthread_mutex_lock(&(table->philos->m_philo));
 	if (ft_time(table->philos->last_meal) > table->die_time)
 	{
@@ -87,6 +91,16 @@ static void	check_alive(t_table *table, long now)
 		table->end_flag = 1;
 	}
 	pthread_mutex_unlock(&(table->philos->m_philo));
+	if (table->meals_limit)
+	{
+		i = 0;
+		min_meals = table->total_meals[i];
+		while (++i < table->philos_count)
+			if (min_meals > table->total_meals[i])
+				min_meals = table->total_meals[i];
+		if (min_meals >= table->meals_limit)
+			table->end_flag = 1;
+	}
 }
 
 static void	end_brainstorm(t_table *table)
