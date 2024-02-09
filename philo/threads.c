@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/28 21:03:23 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/09 18:26:56 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 18:55:22 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static void	*routine(void *data)
 
 static void	start_next_thread(t_philo *philo)
 {
-	usleep(50);
+	usleep(100);
 	if ((philo->next)->id != 1)
 	{
 		pthread_mutex_lock(&((philo->next)->m_philo));
