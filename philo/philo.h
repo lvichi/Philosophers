@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/04 17:56:58 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 14:23:16 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ typedef struct s_philo
 	int				sleeping;
 	int				thinking;
 	pthread_t		thread;
-	//pthread_mutex_t	*data;
-	pthread_mutex_t	m_fork;
+	pthread_mutex_t	m_philo;
 	struct s_philo	*next;
 }	t_philo;
 
@@ -46,13 +45,14 @@ typedef struct s_table
 	long			start_time;
 	int				die_time;
 	int				meals_limit;
-	//pthread_mutex_t	data;
+	int				end_flag;
 }	t_table;
 
 // table.c
 int		create_table(t_table **table, char **argv);
 // threads.c
 int		init_threads(t_table *table);
+void	*routine(void *data);
 void	end_threads(t_table *table);
 // utils.c
 long	ft_time(int start);
