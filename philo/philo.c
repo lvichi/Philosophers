@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/09 17:09:49 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 17:46:31 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,11 @@ int	main(int argc, char **argv)
 	else if (init_threads(table))
 		write (2, "Failed to create threads\n", 25);
 	else
+	{
 		start_brainstorm(table);
+		free(table->total_meals);
+		free(table);
+	}
 }
 
 static int	check_input(char **argv)
@@ -82,7 +86,7 @@ static void	check_alive(t_table *table, long now)
 {
 	int	i;
 	int	min_meals;
-	
+
 	pthread_mutex_lock(&(table->philos->m_philo));
 	if (ft_time(table->philos->last_meal) > table->die_time)
 	{
@@ -108,9 +112,18 @@ static void	end_brainstorm(t_table *table)
 	t_philo	*temp_philo;
 	t_philo	*first;
 
-	end_threads(table);
-	temp_philo = table->philos;
 	first = table->philos;
+	while (1)
+	{
+		pthread_mutex_lock(&(table->philos->m_philo));
+		table->philos->alive = 0;
+		pthread_mutex_unlock(&(table->philos->m_philo));
+		pthread_join(table->philos->thread, NULL);
+		table->philos = table->philos->next;
+		if (table->philos == first)
+			break ;
+	}
+	temp_philo = table->philos;
 	while (temp_philo)
 	{
 		if (table->philos->next != first)
@@ -121,5 +134,4 @@ static void	end_brainstorm(t_table *table)
 		free(table->philos);
 		table->philos = temp_philo;
 	}
-	free(table);
 }

@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/09 16:58:25 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 17:59:04 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ typedef struct s_table
 int		create_table(t_table **table, char **argv);
 // threads.c
 int		init_threads(t_table *table);
-void	*routine(void *data);
-void	end_threads(t_table *table);
 // utils.c
 long	ft_time(int start);
 long	ft_atoi(char *nptr);

@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 19:11:24 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/09 17:11:28 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/09 17:29:56 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	create_table(t_table **table, char **argv)
 	if (argv[4])
 		(*table)->meals_limit = ft_atoi(argv[4]);
 	(*table)->total_meals = (int *)ft_calloc((*table)->philos_count,
-		sizeof(int));
+			sizeof(int));
 	if (!((*table)->total_meals))
 	{
 		free_table(*table);
