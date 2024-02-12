@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/12 22:12:01 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/12 22:33:41 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,9 @@ static int	check_input(char **argv)
 
 void print_table(t_table *table)
 {
-	int	pid;
-
-	while ( (pid = waitpid(-1, NULL, 0)) > 0) 
-	{
-        printf("child %d terminated\n", pid);
-    }
+	while (1) 
+        if (waitpid(-1, NULL, 0) <= 0)
+			break;
 	sem_close(table->sem_end);
 	sem_unlink("/sem_end");
 	sem_close(table->sem_print);

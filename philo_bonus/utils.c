@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:42:22 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/12 21:45:11 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/12 22:29:36 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,28 +103,24 @@ int	ft_putnbr(long nbr)
 
 char	*sem_format_name(int id)
 {
-	char *name;
+	char	*name;
+	char	*format;
+	int 	i;
 
-	name = (char *)malloc(sizeof(char) * 10);
+	format = "/sem_philo000";
+	name = (char *)malloc(sizeof(char) * 14);
 	if (!name)
 		return (NULL);
-	name[0] = '/';
-	name[1] = 'p';
-	name[2] = 'h';
-	name[3] = 'i';
-	name[4] = 'l';
-	name[5] = 'o';
-	name[8] = ((id % 10) + '0');
+	i = -1;
+	while (format[++i])
+		name[i] = format[i];
+	name[12] = ((id % 10) + '0');
 	id /= 10;
 	if (id)
-		name[7] = ((id % 10) + '0');
-	else
-		name[7] = '0';
+		name[11] = ((id % 10) + '0');
 	id /= 10;
 	if (id)
-		name[6] = ((id % 10) + '0');
-	else
-		name[6] = '0';
-	name[9] = 0;
+		name[10] = ((id % 10) + '0');
+	name[13] = 0;
 	return (name);
 }
