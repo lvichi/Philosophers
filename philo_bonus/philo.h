@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/13 15:37:40 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/13 19:02:46 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <semaphore.h>
-# include <fcntl.h>			// For O_* constants
-# include <sys/stat.h>		// For mode constants
-# include <sys/wait.h>      // For waitpid
-# include <stdio.h> 		//delete
+# include <sys/wait.h>
 
 # define INT_MAX 2147483647
+# define PHILO_MAX 999
+# define O_CREAT 00000100
+# define O_RDWR 00000002
 
 typedef struct s_philo
 {
@@ -55,10 +55,8 @@ typedef struct s_table
 
 // table.c
 void	create_table(t_table *table, char **argv);
-void	print_table(t_table *table); //delete
-void	print_philo(t_table *table); //delete
 // process.c
-void	init_processes(t_table *table);
+void	philo_routine(t_table *table);
 // utils.c
 long	ft_time(int start);
 long	ft_atoi(char *nptr);

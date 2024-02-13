@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:42:22 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/12 22:29:36 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/13 18:59:02 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ void	print_log(t_table *table, int type)
 	sem_wait((table->philo).sem_philo);
 	if (!(table->philo).alive)
 		type = 0;
-	sem_post((table->philo).sem_philo);
 	if (type > 0)
 	{
 		sem_wait(table->sem_print);
@@ -78,6 +77,7 @@ void	print_log(t_table *table, int type)
 			write (1, " died\n", 6);
 		sem_post(table->sem_print);
 	}
+	sem_post((table->philo).sem_philo);
 }
 
 int	ft_putnbr(long nbr)
@@ -105,7 +105,7 @@ char	*sem_format_name(int id)
 {
 	char	*name;
 	char	*format;
-	int 	i;
+	int		i;
 
 	format = "/sem_philo000";
 	name = (char *)malloc(sizeof(char) * 14);

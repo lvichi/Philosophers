@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/13 15:50:48 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/13 18:55:55 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,9 @@
 
 int			main(int argc, char **argv);
 static int	check_input(char **argv);
-void		print_table(t_table *table);
-static void	*full_control(void *data);
-void		print_philo(t_table *table);
-/*static void	start_brainstorm(t_table *table);
-static void	check_alive(t_table *table, long now);
-static void	end_brainstorm(t_table *table);*/
+static void	init_processes(t_table *table);
+static void	end_routine(t_table *table);
+static void	*meals_limit_control(void *data);
 
 int	main(int argc, char **argv)
 {
@@ -28,7 +25,16 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 		write(2, "Invalid number of arguments\n", 28);
 	else if (check_input(&argv[1]))
-		write (2, "Wrong arguments, only numbers between 1 and INT_MAX\n", 52);
+	{
+		if (check_input(&argv[1]) == 1)
+			write (2, "Only numbers between 1 and INT_MAX\n", 35);
+		else
+		{
+			write(1, "Number maximum of philosophers: ", 32);
+			ft_putnbr(PHILO_MAX);
+			write(1, "\n", 1);
+		}
+	}
 	else
 	{
 		create_table(&table, &argv[1]);
@@ -50,19 +56,45 @@ static int	check_input(char **argv)
 				return (1);
 	}
 	i = -1;
+	if (ft_atoi(argv[++i]) > PHILO_MAX)
+		return (2);
 	while (argv[++i])
 		if (ft_atoi(argv[i]) > INT_MAX || ft_atoi(argv[i]) == 0)
 			return (1);
 	return (0);
 }
 
-void print_table(t_table *table)
+static void	init_processes(t_table *table)
+{
+	int	i;
+
+	i = -1;
+	while (++i < table->philos_count)
+	{
+		if (!fork())
+		{
+			(table->philo).id = i + 1;
+			(table->philo).sem_philo_name = sem_format_name((table->philo).id);
+			sem_unlink((table->philo).sem_philo_name);
+			(table->philo).sem_philo = sem_open((table->philo).sem_philo_name,
+					O_CREAT, O_RDWR, 1);
+			(table->philo).last_meal = ft_time(0);
+			philo_routine(table);
+			break ;
+		}
+		usleep(100);
+	}
+	if ((table->philo).id == 0)
+		end_routine(table);
+}
+
+static void	end_routine(t_table *table)
 {
 	if (table->meals_limit > 0)
-		pthread_create(&table->full_thread, NULL, full_control, table);
-	while (1) 
-        if (waitpid(-1, NULL, 0) <= 0)
-			break;
+		pthread_create(&table->full_thread, 0, meals_limit_control, table);
+	while (1)
+		if (waitpid(-1, NULL, 0) <= 0)
+			break ;
 	if (table->meals_limit > 0)
 		pthread_join(table->full_thread, NULL);
 	sem_close(table->sem_print);
@@ -75,7 +107,7 @@ void print_table(t_table *table)
 	sem_unlink("/sem_forks");
 }
 
-static void	*full_control(void *data)
+static void	*meals_limit_control(void *data)
 {
 	t_table	*table;
 	int		i;
@@ -90,97 +122,5 @@ static void	*full_control(void *data)
 		sem_post(table->sem_end);
 		sem_post((table->philo).sem_forks);
 	}
-	return(NULL);
+	return (NULL);
 }
-
-void print_philo(t_table *table)
-{
-	sem_wait(table->sem_print);
-	printf("id: %d\n", (table->philo).id);
-	printf("eat_time: %d\n",(table->philo).eat_time);
-	printf("sleep_time: %d\n", (table->philo).sleep_time);
-	printf("meals_count: %d\n\n", (table->philo).meals_count);
-	sem_post(table->sem_print);
-	sem_close(table->sem_print);
-	sem_close((table->philo).sem_philo);
-	sem_unlink((table->philo).sem_philo_name);
-	free((table->philo).sem_philo_name);
-	usleep((table->philo).id * 1000000);
-}
-
-/*static void	start_brainstorm(t_table *table)
-{
-	long	now;
-
-	while (!table->end_flag)
-	{
-		now = ft_time(table->start_time);
-		pthread_mutex_lock(&(table->philos->m_philo));
-		if (table->philos->thinking && table->philos->thinking--)
-			print_log("%d %i is thinking\n", now, table->philos->id);
-		while (table->philos->got_fork && table->philos->got_fork--)
-			print_log("%d %i has taken a fork\n", now, table->philos->id);
-		if (table->philos->eating && table->philos->eating--)
-			print_log("%d %i is eating\n", now, table->philos->id);
-		if (table->philos->sleeping && table->philos->sleeping--)
-			print_log("%d %i is sleeping\n", now, table->philos->id);
-		table->total_meals[table->philos->id - 1] = table->philos->meals_count;
-		pthread_mutex_unlock(&(table->philos->m_philo));
-		table->philos = table->philos->next;
-		check_alive(table, now);
-	}
-	end_brainstorm(table);
-}
-
-static void	check_alive(t_table *table, long now)
-{
-	int	i;
-	int	min_meals;
-
-	pthread_mutex_lock(&(table->philos->m_philo));
-	if (ft_time(table->philos->last_meal) > table->die_time)
-	{
-		print_log("%d %i died\n", now, table->philos->id);
-		table->philos->alive = 0;
-		table->end_flag = 1;
-	}
-	pthread_mutex_unlock(&(table->philos->m_philo));
-	if (table->meals_limit)
-	{
-		i = 0;
-		min_meals = table->total_meals[i];
-		while (++i < table->philos_count)
-			if (min_meals > table->total_meals[i])
-				min_meals = table->total_meals[i];
-		if (min_meals >= table->meals_limit)
-			table->end_flag = 1;
-	}
-}
-
-static void	end_brainstorm(t_table *table)
-{
-	t_philo	*temp_philo;
-	t_philo	*first;
-
-	first = table->philos;
-	while (1)
-	{
-		pthread_mutex_lock(&(table->philos->m_philo));
-		table->philos->alive = 0;
-		pthread_mutex_unlock(&(table->philos->m_philo));
-		pthread_join(table->philos->thread, NULL);
-		table->philos = table->philos->next;
-		if (table->philos == first)
-			break ;
-	}
-	temp_philo = table->philos;
-	while (temp_philo)
-	{
-		if (table->philos->next != first)
-			temp_philo = table->philos->next;
-		else
-			temp_philo = NULL;
-		pthread_mutex_destroy(&(table->philos->m_philo));
-		table->philos = temp_philo;
-	}
-}*/

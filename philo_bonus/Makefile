@@ -6,14 +6,14 @@
 #    By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/30 19:57:48 by lvichi            #+#    #+#              #
-#    Updated: 2024/02/13 15:54:48 by lvichi           ###   ########.fr        #
+#    Updated: 2024/02/13 16:21:37 by lvichi           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo_bonus
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread #-fsanitize=address #-fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -pthread #-fsanitize=thread #-fsanitize=address
 RM = rm -fr
 FILES = *.c
 OBJS = obj_bonus/*.o
