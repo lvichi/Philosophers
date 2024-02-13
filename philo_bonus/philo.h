@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:26:05 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/12 21:55:30 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/13 15:37:40 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ typedef struct s_table
 	long			start_time;
 	int				die_time;
 	int				meals_limit;
+	pthread_t		full_thread;
 	sem_t			*sem_print;
 	sem_t			*sem_full;
 	sem_t			*sem_end;

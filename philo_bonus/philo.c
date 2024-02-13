@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:24:56 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/12 22:33:41 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/13 15:50:48 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 int			main(int argc, char **argv);
 static int	check_input(char **argv);
 void		print_table(t_table *table);
+static void	*full_control(void *data);
 void		print_philo(t_table *table);
 /*static void	start_brainstorm(t_table *table);
 static void	check_alive(t_table *table, long now);
@@ -57,15 +58,39 @@ static int	check_input(char **argv)
 
 void print_table(t_table *table)
 {
+	if (table->meals_limit > 0)
+		pthread_create(&table->full_thread, NULL, full_control, table);
 	while (1) 
         if (waitpid(-1, NULL, 0) <= 0)
 			break;
-	sem_close(table->sem_end);
-	sem_unlink("/sem_end");
+	if (table->meals_limit > 0)
+		pthread_join(table->full_thread, NULL);
 	sem_close(table->sem_print);
 	sem_unlink("/sem_print");
+	sem_close(table->sem_full);
+	sem_unlink("/sem_full");
+	sem_close(table->sem_end);
+	sem_unlink("/sem_end");
 	sem_close((table->philo).sem_forks);
 	sem_unlink("/sem_forks");
+}
+
+static void	*full_control(void *data)
+{
+	t_table	*table;
+	int		i;
+
+	table = (t_table *)data;
+	i = -1;
+	while (++i < table->philos_count)
+		sem_wait(table->sem_full);
+	i = -1;
+	while (++i < table->philos_count)
+	{
+		sem_post(table->sem_end);
+		sem_post((table->philo).sem_forks);
+	}
+	return(NULL);
 }
 
 void print_philo(t_table *table)

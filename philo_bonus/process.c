@@ -6,7 +6,7 @@
 /*   By: lvichi <lvichi@student.42porto.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/28 21:03:23 by lvichi            #+#    #+#             */
-/*   Updated: 2024/02/12 22:18:52 by lvichi           ###   ########.fr       */
+/*   Updated: 2024/02/13 16:02:46 by lvichi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ static void	init_semaphores(t_table *table)
 			table->philos_count);
 	sem_unlink("/sem_end");
 	table->sem_end = sem_open("/sem_end", O_CREAT, O_RDWR, 0);
+	sem_unlink("/sem_full");
+	table->sem_full = sem_open("/sem_full", O_CREAT, O_RDWR, 0);
 }
 
 static void	philo_routine(t_table *table)
@@ -78,16 +80,21 @@ static void	philo_routine(t_table *table)
 		usleep((table->philo).eat_time * 1000);
 		sem_post((table->philo).sem_forks);
 		sem_post((table->philo).sem_forks);
+		sem_wait((table->philo).sem_philo);
+		(table->philo).meals_count++;
+		sem_post((table->philo).sem_philo);
 		print_log(table, 3);
 		usleep((table->philo).sleep_time * 1000);
 		print_log(table, 4);
 	}
+	sem_post((table->philo).sem_philo);
 	sem_post((table->philo).sem_forks);
 	sem_post((table->philo).sem_forks);
 	pthread_join((table->philo).control_thread, NULL);
 	pthread_join((table->philo).end_thread, NULL);
-	sem_close(table->sem_end);
 	sem_close(table->sem_print);
+	sem_close(table->sem_full);
+	sem_close(table->sem_end);
 	sem_close((table->philo).sem_forks);
 	sem_close((table->philo).sem_philo);
 	sem_unlink((table->philo).sem_philo_name);
@@ -107,6 +114,11 @@ static void	*philo_control(void *data)
 		if (ft_time((table->philo).last_meal) > table->die_time ||
 				!(table->philo).alive)
 			break ;
+		if ((table->philo).meals_count == table->meals_limit)
+		{
+			sem_post(table->sem_full);
+			(table->philo).meals_count++;
+		}
 		sem_post((table->philo).sem_philo);
 		usleep(100);
 	}
@@ -125,6 +137,7 @@ static void	*philo_control(void *data)
 static void	*philo_end(void * data)
 {
 	t_table	*table;
+	int		i;
 
 	table = (t_table *)data;
 	sem_wait(table->sem_end);
@@ -132,6 +145,9 @@ static void	*philo_end(void * data)
 		(table->philo).alive = 0;
 	sem_post((table->philo).sem_philo);
 	sem_post(table->sem_end);
+	i = -1;
+	while (++i < table->philos_count)
+		sem_post(table->sem_full);
 	return (NULL);
 }
 
