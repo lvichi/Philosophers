@@ -13,7 +13,7 @@
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -fsanitize=thread #-fsanitize=address 
+CFLAGS = -Wall -Wextra -Werror -g -pthread -fsanitize=thread #-fsanitize=address
 RM = rm -fr
 FILES = *.c
 OBJS = obj/*.o

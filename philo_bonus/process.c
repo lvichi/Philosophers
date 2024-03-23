@@ -21,7 +21,6 @@ static void	philo_end_routine(t_table *table);
 void	philo_routine(t_table *table)
 {
 	pthread_create(&((table->philo).control_thread), 0, philo_control, table);
-	pthread_create(&((table->philo).end_thread), 0, philo_end, table);
 	while (1)
 	{
 		sem_wait((table->philo).sem_forks);
@@ -43,6 +42,7 @@ void	philo_routine(t_table *table)
 		print_log(table, 3);
 		usleep((table->philo).sleep_time * 1000);
 		print_log(table, 4);
+		usleep(100);
 	}
 	philo_end_routine(table);
 }
@@ -52,6 +52,7 @@ static void	*philo_control(void *data)
 	t_table	*table;
 
 	table = (t_table *)data;
+	pthread_create(&((table->philo).end_thread), 0, philo_end, table);
 	while (1)
 	{
 		ft_time(table->start_time);

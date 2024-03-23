@@ -88,7 +88,8 @@ static void	check_alive(t_table *table, long now)
 	int	min_meals;
 
 	pthread_mutex_lock(&(table->philos->m_philo));
-	if (ft_time(table->philos->last_meal) > table->die_time)
+	if (table->philos->last_meal
+		&& ft_time(table->philos->last_meal) > table->die_time)
 	{
 		print_log("%d %i died\n", now, table->philos->id);
 		table->philos->alive = 0;
